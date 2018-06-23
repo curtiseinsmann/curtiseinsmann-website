@@ -10,6 +10,14 @@
 # Review documentation to determine if you should use `theme` or `remote_theme`
 # https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/#installing-the-theme
 
+# Notes:
+# * When pushing to GitHub pages, it may take about an hour for changes to go into effect 
+# * https://stackoverflow.com/questions/24851824/how-long-does-it-take-for-github-page-to-show-changes-after-changing-index-html
+# * https://stackoverflow.com/questions/45362628/github-pages-site-not-detecting-index-html
+# * Run bundle exec jekyll build, then copy over the _site directory to wherever you're pushing, using:
+# cp -r ../../curtis-einsmann-website/_site/ .
+# * https://stackoverflow.com/questions/41511696/jekyll-build-is-putting-localhost-links-in-site-production-files
+
 theme                  : "minimal-mistakes-jekyll"
 # remote_theme           : "mmistakes/minimal-mistakes"
 minimal_mistakes_skin    : "dark" # "default", "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
