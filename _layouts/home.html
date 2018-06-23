@@ -1,0 +1,19 @@
+---
+layout: archive
+---
+
+<p>
+Hi.  I'm Curtis.  I'm a Software Development Engineer located in the Washington, D.C. area.  I just launched this site, so don't expect a whole lot of content yet.  I'll get to writing some blog posts in between coding, playing basketball and practicing Stoic philosophy.
+<br></br>
+I work for <a href="https://aws.amazon.com">Amazon Web Services</a>.  Naturally, I'm a huge fan of those services.  AWS Lambda is pretty much the closest thing to magic that I've ever experienced.  My favorite languages to develop in are Ruby and Java.
+<br></br>
+Feel free to reach out and connect with me on <a href="https://www.linkedin.com/in/curtis-einsmann-a6834154/">LinkedIn</a>.
+</p>
+
+<h3 class="archive__subtitle">{{ "Recent Posts" }}</h3>
+
+{% for post in paginator.posts %}
+  {% include archive-single.html %}
+{% endfor %}
+
+{% include paginator.html %}
