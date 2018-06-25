@@ -1,20 +1,23 @@
 ---
 layout: single
 title:  "Defensive Ruby Coding for Amazon S3's TestEvent"
-date:   2018-06-10 09:00:00 -0400
+date:   2018-06-23 09:00:00 -0400
 categories: technical
 tags: ruby aws s3 sns sqs
 ---
 
-Whenenever you come across the `s3:TestEvent` notification from [Amazon Simple Storage Service][S3] (S3), it may come as an unpleasant surprise.  It depends on how you've written your code to parse your [Amazon Simple Notification Service][SNS] (SNS) notifications.  Fortunately, we can do a deep dive and illustrate how we can code defensively against these kinds of anomalies in Ruby.
+The `s3:TestEvent` notification from [Amazon S3][S3] may come as an unpleasant surprise.  It depends on how you've written code to parse your [Amazon SNS][SNS] notifications.  In this post, we'll do a deep dive into how we can code defensively against these kinds of anomalies in Ruby.
 
 ### Initial Architecture
 
-Let's consider a system with some basic AWS architecture.  Let's say we've set up an S3 bucket, called `my-s3-bucket`, which essentially stores files in the cloud.  S3 supports event-driven messages to be sent whenever objects (files) are uploaded to the bucket.  These event-driven messages are called SNS topics. We've configured the S3 bucket to publish an SNS topic, called `my-foo-sns-topic`, for any S3 object uploaded to `my-s3-bucket` under the key `foo/`.  
-
-We also have an [Amazon Simple Queue Service][SQS] (SQS) queue, `my-sqs-queue` which is subscribed to this SNS topic.  We're polling this queue for messages using the AWS SDK for Ruby to download the file and do some processing on it.  This architecture is illustrated in the diagram below.
+Let's consider a system with some basic AWS architecture.
 
 ![Initial AWS Architecture]({{ "/assets/images/inital-aws-architecture.001.jpeg" }})
+*Figure 1 -- processing S3 objects with key prefix foo/*
+
+In *Figure 1*, we've set up an S3 bucket, called `my-s3-bucket`.  S3 supports event-driven messages to be sent whenever objects (files) are uploaded to the bucket.  These event-driven messages are called SNS topics. We've configured the S3 bucket to publish an SNS topic, called `my-foo-sns-topic`, for any S3 object uploaded to `my-s3-bucket` under the key `foo/`.  
+
+We also have an [Amazon SQS][SQS] queue, `my-sqs-queue` which is subscribed to this SNS topic.  We're polling this queue for messages using the [AWS SDK for Ruby][SDK] to download the file and do some processing on it.
 
 Since we're good engineers and follow security best practices, we've put strict permissions on `my-sqs-queue`: the SNS topic `my-foo-sns-topic` is the only entity that can send messages to the queue.  Thus, we're pretty confident that we'll only be receiving predictable SNS JSON messages into `my-sqs-queue` that look something like this:
 
@@ -47,6 +50,8 @@ sqs_response = @sqs.receive_message(
 )
 
 sqs_response.messages.each do |sqs_message|
+  # Notice the assumptions about the 
+  # message format here...
   s3 = JSON.parse(
     JSON.parse(sqs_message.body)['Message']
   )['Records'].first['s3']
@@ -72,9 +77,10 @@ Now, let's say we want to publish an SNS topic, not only for objects under the `
 2. Subscribe `my-sqs-queue` to the new `my-bar-sns-topic`
 3. Modify the S3 bucket, `my-s3-bucket` to publish to `my-bar-sns-topic` whenever objects are uploaded under the `bar/` key
 
-This architecture would look to this:
+The architecture would now look like this:
 
 ![Subsequent AWS Architecture]({{ "/assets/images/subsequent-aws-architecture.001.jpeg" }})
+*Figure 2 -- Processing S3 objects with key prefixes foo/ and bar/*
 
 Sometime after performing step 3, we notice that our Ruby code has failed, due to the following error message:
 
@@ -99,25 +105,11 @@ We check the message that failed, and it looks like this:
 
 ### Coding against the s3:TestEvent
 
-It turns out that the `s3:TestEvent` is an SNS notification that is sent, whenever the notification configuration on the S3 bucket is established.  Most of the time, this test event goes unnoticed, because upon initial creation of these resources, there usually aren't any active processors of the messages.  You're likely to only run into the `s3:TestEvent` when making modifications on resources that are already consuming the data.
+It turns out that the `s3:TestEvent` is an SNS notification that is sent whenever the notification configuration on the S3 bucket is established.  Most of the time, this test event goes unnoticed, because upon initial creation of these resources, there usually aren't any active processors of the messages.  You're likely to only run into the `s3:TestEvent` when making modifications on resources that are already consuming the data.
 
-As you can see from the JSON message above, the embedded JSON string for the "Message" value does not have the "Records" key.  Thus, our code fails when trying to call `['Records']` on a `nil` value.  We can utilize Ruby's `fetch` method to clean our code up and avoid these errors.
+As you can see from the JSON message above, the embedded JSON string for the "Message" value does not have the "Records" key.  Thus, our code fails when trying to call `['Records']` on a `nil` value.  We can utilize [Ruby's `fetch` method][fetch] to clean our code up and avoid these errors (I've left out the intialization and `receive_message` blocks).
 
 {% highlight ruby %}
-@sqs = Aws::SQS::Client.new(
-  region: 'us-east-1', 
-  credentials: Aws::Credentials.new(
-    creds['access_key_id'], creds['secret_access_key']
-  )
-)
-
-sqs_response = @sqs.receive_message(
-  queue_url: QUEUE_URL,
-  max_number_of_messages: 1,
-  visibility_timeout: 10,
-  wait_time_seconds: 10
-)
-
 def delete_sqs_message(sqs_message)
   @sqs.delete_message(
     queue_url: QUEUE_URL,
@@ -153,3 +145,5 @@ I think we can all agree that the `s3:TestEvent` is somewhat inconvenient in the
 [S3]: https://aws.amazon.com/documentation/s3/
 [SNS]: https://aws.amazon.com/documentation/sns/
 [SQS]: https://aws.amazon.com/documentation/sqs/
+[SDK]: https://aws.amazon.com/sdk-for-ruby/
+[fetch]: https://docs.ruby-lang.org/en/2.3.0/Hash.html#method-i-fetch
