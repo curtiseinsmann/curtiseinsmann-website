@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  "Defensive Ruby Coding for Amazon S3's TestEvent"
+title:  "Defensive Ruby Against Amazon S3's TestEvent"
 date:   2018-06-23 09:00:00 -0400
 categories: technical
 tags: ruby aws s3 sns sqs
@@ -77,7 +77,7 @@ Now, let's say we want to publish an SNS topic, not only for objects under the `
 2. Subscribe `my-sqs-queue` to the new `my-bar-sns-topic`
 3. Modify the S3 bucket, `my-s3-bucket` to publish to `my-bar-sns-topic` whenever objects are uploaded under the `bar/` key
 
-The architecture would now look like this:
+This new architecture is depicted in *Figure 2*:
 
 ![Subsequent AWS Architecture]({{ "/assets/images/subsequent-aws-architecture.001.jpeg" }})
 *Figure 2 -- Processing S3 objects with key prefixes foo/ and bar/*
