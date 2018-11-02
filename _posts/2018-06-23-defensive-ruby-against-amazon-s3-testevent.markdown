@@ -6,7 +6,7 @@ categories: technical
 tags: ruby aws s3 sns sqs
 ---
 
-The `s3:TestEvent` notification from [Amazon S3][S3] may come as an unpleasant surprise.  It depends on how you've written code to parse your [Amazon SNS][SNS] notifications.  In this post, we'll do a deep dive into how we can code defensively against these kinds of anomalies in Ruby.
+The `s3:TestEvent` notifications from [Amazon S3][S3] can be pretty useful to ensure that your notifications are correctly configured.  However, there are certain instances in which a lack of defensive coding can get you into trouble.  It depends on how you've written code to parse your [Amazon SNS][SNS] notifications.  In this post, we'll do a deep dive into how we can code defensively against these kinds of anomalies in Ruby.
 
 ### Initial Architecture
 
@@ -105,7 +105,7 @@ We check the message that failed, and it looks like this:
 
 ### Coding against the s3:TestEvent
 
-It turns out that the `s3:TestEvent` is an SNS notification that is sent whenever the notification configuration on the S3 bucket is established.  Most of the time, this test event goes unnoticed, because upon initial creation of these resources, there usually aren't any active processors of the messages.  You're likely to only run into the `s3:TestEvent` when making modifications on resources that are already consuming the data.
+What we've come across here is the `s3:TestEvent`.  It's an SNS notification that is sent whenever the notification configuration on the S3 bucket is established.  Most of the time, this test event goes unnoticed, because upon initial creation of these resources, there usually aren't any active processors of the messages.  You're likely to only run into the `s3:TestEvent` when making modifications on resources that are already consuming the data.
 
 As you can see from the JSON message above, the embedded JSON string for the "Message" value does not have the "Records" key.  Thus, our code fails when trying to call `['Records']` on a `nil` value.  We can utilize [Ruby's `fetch` method][fetch] to clean our code up and avoid these errors (I've left out the intialization and `receive_message` blocks).
 
@@ -140,7 +140,7 @@ sqs_response.messages.each do |sqs_message|
 end
 {% endhighlight %}
 
-I think we can all agree that the `s3:TestEvent` is somewhat inconvenient in these situations.  However, if we write our code defensively, we can protect ourselves from this, or other unexpected messages, in our SQS queue.  Coding defensively is a good habit to get into, especially when making calls to external dependencies.
+It can be argued that the `s3:TestEvent` is somewhat inconvenient in these situations.  However, as an engineer, it's good to get into the habit of filtering out data that is in an unexpected format.  This is particularly the case when receiving data from any kind of external dependency, whether that dependency is SQS or any other type of resource in the cloud.   If we write our code defensively, we can protect ourselves from this, or other unexpected messages, in our SQS queue.
 
 [S3]: https://aws.amazon.com/documentation/s3/
 [SNS]: https://aws.amazon.com/documentation/sns/

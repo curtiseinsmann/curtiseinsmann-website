@@ -110,7 +110,7 @@ analytics:
 author:
   name             : "Curtis Einsmann"
   avatar           : "/assets/images/my-photo.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Software Development Engineer at <a href='https://aws.amazon.com/'>Amazon Web Services</a>."
+  bio              : "Software Development Engineer at <a href='https://aws.amazon.com/'>Amazon Web Services</a>.  Blog opinions are my own."
   location         : "Arlington, VA"
   email            :
   uri              :
