@@ -192,10 +192,10 @@ My employer, Amazon, will 100% match employee contributions to the following org
 </p>
 
 <div style="padding-top: 5px; padding-bottom: 5px;">
-<button id="prev-button" type="button" class="btn btn-primary" onclick="updateState('prev')" disabled>
+<button id="prev-button" type="button" class="btn btn--inverse btn--x-large" onclick="updateState('prev')" disabled>
   Previous
 </button>
-<button id="next-button" type="button" class="btn btn-success" onclick="updateState('next');">
+<button id="next-button" type="button" class="btn btn--success btn--x-large" onclick="updateState('next');">
   Next
 </button>
 </div>

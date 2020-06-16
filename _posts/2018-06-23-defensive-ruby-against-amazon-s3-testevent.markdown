@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  "Defensive Ruby Against Amazon S3's TestEvent"
-date:   2018-06-23 09:00:00 -0400
+date:   2030-06-23 09:00:00 -0400
 categories: technical
 tags: ruby aws s3 sns sqs
 ---
