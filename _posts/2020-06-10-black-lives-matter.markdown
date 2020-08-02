@@ -1,7 +1,7 @@
 ---
 layout: single
 title:  "Black Lives Matter"
-date:   2020-06-10 09:00:00 -0400
+date:   2030-06-23 09:00:00 -0400
 categories: donations
 tags: blacklivesmatter
 ---
