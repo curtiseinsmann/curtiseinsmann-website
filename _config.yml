@@ -109,8 +109,8 @@ analytics:
 # Site Author
 author:
   name             : "Curtis Einsmann"
-  avatar           : "/assets/images/my-photo.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Software Development Engineer at <a href='https://aws.amazon.com/'>Amazon Web Services</a>.  Blog opinions are my own."
+  avatar           : "/assets/images/DSC08566.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  bio              : "Software Engineer at Amazon. Opinions mine."
   location         : "Arlington, VA"
   email            :
   uri              :
@@ -119,13 +119,13 @@ author:
   codepen          :
   dribbble         :
   flickr           :
-  facebook         : curtiseinsmann
+  facebook         : 
   foursquare       :
-  github           : curtiseinsmann
+  github           : 
   gitlab           :
   google_plus      :
   keybase          :
-  instagram        : curtiseinsmann
+  instagram        : 
   lastfm           :
   linkedin         : curtiseinsmann # "john-doe-12345678" (the last part of your profile url, e.g. https://www.linkedin.com/in/john-doe-12345678)
   pinterest        :
